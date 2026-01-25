@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alphonse Mucha Exhibition Database in Japan：国内ミュシャ展データベース</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic&family=BIZ+UDPMincho&display=swap" rel="stylesheet">
+</head>
+<body class="bg-stone-50 text-stone-800 font-sans">
+
+    <header class="bg-stone-800 text-stone-100 p-6 shadow-md">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <h1 class="text-xl md:text-2xl font-serif tracking-wide">Alphonse Mucha Exhibition Database in Japan</h1>
+            <div id="total-count" class="text-sm bg-stone-700 px-4 py-1 rounded-full border border-stone-600">読み込み中...</div>
+        </div>
+    </header>
+
+    <main class="container mx-auto mt-8 px-4 pb-12 max-w-5xl">
+        <section id="home-view" class="space-y-8 transition-opacity duration-300">
+            <div class="bg-white p-6 md:p-8 rounded-lg shadow-sm border border-stone-200">
+                <h2 class="text-lg font-medium mb-3 text-stone-700 border-b pb-2">国内ミュシャ展データベース</h2>
+                <p class="leading-relaxed text-sm md:text-base">
+                    1978年から現在までに日本で開催されたアルフォンス・ミュシャ展の情報を網羅的に集約したデータベースです。<br>
+                    開催年、地域などから自由に展覧会を検索・閲覧することができます。
+                </p>
+
+                <button id="btn-about" class="text-sm font-bold text-stone-600 bg-stone-100 hover:bg-stone-200 px-4 py-2 rounded transition flex items-center gap-1">
+                    詳細を見る <span>→</span>
+                </button>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="md:col-span-1 bg-stone-100 p-6 rounded-lg shadow-inner border border-stone-200 h-fit">
+                    <h3 class="font-bold mb-4 text-stone-700 flex items-center gap-2">
+                        <span>🔍</span> 絞り込み検索
+                    </h3>
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-xs font-bold text-stone-500 mb-1">キーワード</label>
+                            <input type="text" id="search-keyword" class="w-full p-2 rounded border border-stone-300 focus:border-stone-500 focus:outline-none" placeholder="展覧会名、会場など">
+                            <div class="flex gap-4 mt-2 text-xs">
+                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="search-mode" value="and" checked> すべて含む (AND)</label>
+                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="search-mode" value="or"> いずれか (OR)</label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-bold text-stone-500 mb-1">開催地 (都道府県)</label>
+                            <select id="search-pref" class="w-full p-2 rounded border border-stone-300 focus:border-stone-500 focus:outline-none bg-white">
+                                <option value="">すべての地域</option>
+                                </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-stone-500 mb-1">開催期間 (年)</label>
+                            <div class="flex items-center gap-2">
+                                <select id="year-start" class="w-full p-2 rounded border border-stone-300 bg-white focus:outline-none">
+                                     <option value="">指定なし</option>
+                                    </select>
+                                 <span class="text-stone-400">〜</span>
+                                <select id="year-end" class="w-full p-2 rounded border border-stone-300 bg-white focus:outline-none">
+                                    <option value="">指定なし</option>
+                                    </select>
+                                </div>
+                        </div>
+
+                        <button id="btn-search" class="w-full bg-stone-700 text-white font-bold py-3 rounded hover:bg-stone-600 transition shadow-lg transform active:scale-95">
+                            検索する
+                        </button>
+                    </div>
+                </div>
+
+                <div class="md:col-span-2 space-y-6">
+                    <div class="bg-white p-6 rounded-lg border border-stone-200 shadow-sm">
+                        <p class="text-xs font-bold text-stone-400 mb-2 text-center uppercase tracking-widest">Analytics</p>
+                        <div class="grid grid-cols-2 gap-4 h-48">
+                            <div class="bg-stone-50 flex items-center justify-center border-dashed border-2 border-stone-200 rounded text-stone-400 text-sm">
+                                [開催頻度グラフ]
+                            </div>
+                            <div class="bg-stone-50 flex items-center justify-center border-dashed border-2 border-stone-200 rounded text-stone-400 text-sm">
+                                [地方別内訳]
+                            </div>
+                        </div>
+                        <p class="text-xs text-center text-stone-400 mt-2">※ここにエクセルで作成したグラフ画像を配置予定</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="result-view" class="hidden space-y-6">
+            <div class="flex flex-wrap justify-between items-end border-b border-stone-300 pb-4 gap-4">
+                <div>
+                    <button id="btn-back" class="text-stone-500 hover:text-stone-800 hover:underline flex items-center gap-1 text-sm mb-1 transition">
+                        ← 検索画面に戻る
+                    </button>
+                    <h2 class="text-xl font-medium flex items-center gap-2">
+                        検索結果
+                        <span id="result-info" class="text-sm font-normal bg-stone-200 px-3 py-1 rounded-full text-stone-700 hidden">
+                        全<span id="result-total-count" class="font-bold mx-0.5">0</span>件中 
+                        <span id="result-range" class="font-bold mx-0.5">0～0</span>件目
+</span>
+                    </h2>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <label class="text-xs font-bold text-stone-500">並び順:</label>
+                    <select id="sort-order" class="p-1.5 text-sm border border-stone-300 rounded bg-white focus:outline-none">
+                        <option value="date-asc">開催日が古い順</option>
+                        <option value="date-desc">開催日が新しい順</option>
+                        <option value="title-asc">展覧会名順</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="hidden md:grid md:grid-cols-12 gap-2 px-5 py-2 text-xs font-bold text-stone-500 border-b border-stone-300 mb-2">
+                <div class="col-span-1">開催年</div>
+                <div class="col-span-4">展覧会名</div>
+                <div class="col-span-3 text-left -ml-3">会場名</div>
+                <div class="col-span-2 text-left -ml-6">会期</div>
+                <div class="col-span-2 text-left -ml-5">巡回情報</div>
+            </div>
+
+            <div id="result-list" class="space-y-3">
+                </div>
+
+            <div id="pagination-controls" class="hidden flex justify-center items-center gap-6 mt-10 pb-10">
+                <button id="btn-prev" class="px-4 py-2 border border-stone-300 rounded text-stone-600 hover:bg-stone-100 disabled:opacity-30 disabled:cursor-not-allowed transition text-sm font-bold">
+                    ← 前の50件
+                </button>
+    
+                 <span id="page-info" class="text-stone-500 text-sm font-bold">
+                    <span id="current-page-num" class="text-stone-800">1</span> / <span id="total-pages-num">1</span> ページ
+                 </span>
+    
+                 <button id="btn-next" class="px-4 py-2 border border-stone-300 rounded text-stone-600 hover:bg-stone-100 disabled:opacity-30 disabled:cursor-not-allowed transition text-sm font-bold">
+                     次の50件 →
+                </button>
+            </div>
+        </section>
+
+        <section id="about-view" class="hidden space-y-8 animate-fade-in">
+            <div class="flex items-center justify-between border-b border-stone-300 pb-4">
+                <h2 class="text-2xl font-serif font-medium text-stone-800">このデータベースについて</h2>
+                <button id="btn-about-back" class="text-stone-500 hover:text-stone-800 hover:underline flex items-center gap-1 text-sm transition">
+                     ← ホームに戻る
+                </button>
+            </div>
+
+            <div class="bg-white p-8 rounded-lg shadow-sm border border-stone-200 space-y-6 leading-relaxed">
+                <div>
+                    <h3 class="font-bold text-stone-700 border-l-4 border-stone-500 pl-3 mb-3">プロジェクト概要</h3>
+                    <p>ここに研究の目的や背景を記載します。例：本プロジェクトは、1978年の日本初の回顧展から現在に至るまでの、アルフォンス・ミュシャに関連する展覧会の変遷を記録することを目的としています。</p>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-stone-700 border-l-4 border-stone-500 pl-3 mb-3">データの収集・分類について</h3>
+                    <p>各展覧会のカタログ、美術館のアーカイブ、国立新美術館のデータベース等を元に、独自に集計・作成したものです。</p>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-stone-700 border-l-4 border-stone-500 pl-3 mb-3">凡例</h3>
+                    <ul class="list-disc list-inside space-y-1 text-sm text-stone-600">
+                        <li><strong>カタログ有</strong>：現物が確認できているもの、または所蔵が確認されているもの。</li>
+                        <li><strong>巡回情報</strong>：記録に残っている限りの主要な会場を記載。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-stone-800 text-stone-400 text-center py-6 text-xs mt-12">
+        <p>&copy; 2026 Alphonse Mucha Exhibition Database in Japan</p>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>

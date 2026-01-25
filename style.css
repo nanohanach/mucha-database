@@ -1,0 +1,53 @@
+/* フォント設定 */
+body {
+    font-family: 'BIZ UDPGothic', "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+}
+h1, .font-serif {
+    font-family: 'BIZ UDPMincho', "Hiragino Mincho ProN", serif;
+}
+h2 {
+    font-family: 'BIZ UDPGothic', "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif !important;
+}
+#result-count {
+    font-family: 'BIZ UDPGothic', "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif !important;
+}
+
+/* アコーディオンの開閉アニメーション */
+.detail-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0, 1, 0, 1); /* 自然な動き */
+}
+
+/* 開いた状態 */
+.item-row.open .detail-content {
+    max-height: 2000px; /* 十分な高さを確保 */
+    transition: max-height 0.5s ease-in-out;
+}
+
+/* 矢印の回転 */
+.arrow {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+.item-row.open .arrow {
+    transform: rotate(180deg);
+}
+
+/* 改行コードを維持して表示するクラス */
+.pre-wrap {
+    white-space: pre-wrap;
+    line-height: 1.6;
+}
+
+/* リストアイテムのホバー効果 */
+.item-row:hover {
+    border-color: #a8a29e; /* stone-400 */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* 開いた状態のアイテム */
+.item-row.open {
+    border-color: #78716c; /* stone-500 */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
