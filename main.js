@@ -251,8 +251,8 @@ function renderResults() {
             <div class="summary-pnl p-4 md:p-5 flex justify-between items-center bg-white hover:bg-stone-50 transition">
                 <div class="flex-1 grid md:grid-cols-12 gap-2 text-sm items-center">
                     <div class="md:col-span-1 font-bold text-stone-400 text-left">${ex.year}</div>
-                    <div class="md:col-span-4 font-bold text-base text-stone-800 text-left">${ex.title}</div>
-                    <div class="md:col-span-3 text-stone-600 flex items-center text-left pl-1 -ml-2">
+                    <div class="md:col-span-4 font-bold text-base text-stone-800 text-left md:-ml-4">${ex.title}</div>
+                    <div class="md:col-span-3 text-stone-600 flex items-center text-left md:pl-6 pl-1 -ml-2">
                         <span class="md:hidden text-xs font-bold text-stone-400 bg-stone-100 px-1 rounded mr-2">会場:</span>
                         ${ex.venue}
                     </div>

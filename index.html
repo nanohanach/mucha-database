@@ -24,10 +24,11 @@
                 <h2 class="text-lg font-medium mb-3 text-stone-700 border-b pb-2">国内ミュシャ展データベース</h2>
                 <p class="leading-relaxed text-sm md:text-base">
                     1978年から現在までに日本で開催されたアルフォンス・ミュシャ展の情報を網羅的に集約したデータベースです。<br>
-                    開催年、地域などから自由に展覧会を検索・閲覧することができます。
+                    展覧会名、会場名、開催年、地域などから自由に展覧会を検索・閲覧することができます。<br>
+                    カタログ情報も調査・記載していますのでミュシャ展のカタログ探しにもご活用ください。
                 </p>
 
-                <button id="btn-about" class="text-sm font-bold text-stone-600 bg-stone-100 hover:bg-stone-200 px-4 py-2 rounded transition flex items-center gap-1">
+                <button id="btn-about" class="mt-2 text-sm font-bold text-stone-600 bg-stone-100 hover:bg-stone-200 px-4 py-2 rounded transition flex items-center gap-1">
                     詳細を見る <span>→</span>
                 </button>
             </div>
@@ -134,10 +135,10 @@
 
             <div class="hidden md:grid md:grid-cols-12 gap-2 px-5 py-2 text-xs font-bold text-stone-500 border-b border-stone-300 mb-2">
                 <div class="col-span-1">開催年</div>
-                <div class="col-span-4">展覧会名</div>
-                <div class="col-span-3 text-left -ml-3">会場名</div>
-                <div class="col-span-2 text-left -ml-6">会期</div>
-                <div class="col-span-2 text-left -ml-5">巡回情報</div>
+                <div class="col-span-4 md:-ml-4">展覧会名</div>
+                <div class="col-span-3 text-left md:pl-4">会場名</div>
+                <div class="col-span-2 text-left md:-ml-6">会期</div>
+                <div class="col-span-2 text-left md:-ml-5">巡回情報</div>
             </div>
 
             <div id="result-list" class="space-y-3">
@@ -169,17 +170,26 @@
             <div class="bg-white p-8 rounded-lg shadow-sm border border-stone-200 space-y-6 leading-relaxed">
                 <div>
                     <h3 class="font-bold text-stone-700 border-l-4 border-stone-500 pl-3 mb-3">概要</h3>
-                    <p>ここに研究の目的や背景を記載します。例：本プロジェクトは、1978年の日本初の回顧展から現在に至るまでの、アルフォンス・ミュシャに関連する展覧会の変遷を記録することを目的としています。
+                    <p>このデータベースは、1978年の日本初の回顧展から現在に至るまでの、日本で開催されたアルフォンス・ミュシャ展の変遷を記録することを目的としています。
+                        ここでの「アルフォンス・ミュシャ展」とは、ミュシャを単独で、又は主として扱った企画展を指します。
                         <br>
-                        このデータベースの特徴
+                        <p class="text-sm text-stone-500">
+                            ※画廊での小規模な展示、および2000年から毎年3回程度開催されている堺アルフォンス・ミュシャ館での企画展は常設展に準ずるものとして除外しています。
+                        </p>
+                        主な特徴<br>
+                        ・（おそらく）日本で初めてミュシャ展を網羅的に集約したデータベースである点。<br>
+                        ・　巡回情報、主催・後援・協賛について詳細情報を記載した点。<br>
+                        ・　展覧会カタログのデータを収録した点。The Art Library Consortium（ALC、美術図書館連絡会）の検索システムをはじめとして古本サイト等でもカタログの有無を調査した。<br>
+                        ・　5年ごとの開催頻度の推移、地方ごとの開催数内訳のグラフを作成した点。日本におけるミュシャ展の多さ・継続性・広がりを可視化した。
                     </p>
                 </div>
 
                 <div>
                     <h3 class="font-bold text-stone-700 border-l-4 border-stone-500 pl-3 mb-3">データの収集・分類について</h3>
-                    <p>各展覧会のカタログ、美術館のアーカイブ、国立新美術館のデータベース等を元に、個人が独自に集計・作成したものです。</p>
+                    <p>各展覧会のカタログ、美術館のアーカイブ、国立新美術館のデータベース等を元に、個人が独自に集計・作成したものです。
+                    </p>
                 
-                    <div class="border border-stone-200 rounded-md overflow-hidden">
+                    <div class="mt-2 border border-stone-200 rounded-md overflow-hidden">
                         <button id="btn-toggle-refs" class="w-full flex justify-between items-center px-4 py-3 bg-stone-50 hover:bg-stone-100 transition text-sm font-bold text-stone-600">
                             <span>参照資料・出典一覧</span>
                             <span id="ref-icon">＋</span>
@@ -262,6 +272,13 @@
                                         </a>
                                     </li>
                                     <li class="pl-4 border-l border-stone-200">
+                                        <a href="https://alc.opac.jp/search/all/"target="_blank" rel="noopener noreferrer" class="text-stone-600 no-underline hover:underline transition inline-flex items-center gap-1.5">
+                                            美術図書館横断検索（ALC Search）
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-stone-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="pl-4 border-l border-stone-200">
                                         <a href="https://www.muchafoundation.org/en/exhibitions/past-exhibitions/year/2025" target="_blank" rel="noopener noreferrer" class="text-stone-600 no-underline hover:underline transition inline-flex items-center gap-1.5">
                                             Mucha Foundation 公式サイト「Past Exhibitions」
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-stone-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
@@ -285,7 +302,7 @@
                                     <li class="pl-4 border-l border-stone-200 text-stone-600">
                                         複数の文化情報サイト
                                         <span class="block text-xs text-stone-500 mt-1 leading-relaxed">
-                                            ※公式サイト等で詳細が確認できなかった項目について、情報が一致することを確認した上でデータに採用
+                                            ※公式サイト等で詳細が確認できなかった項目について、情報が一致することを確認した上でデータに採用した。
                                         </span>
                                     </li>
                                     <li class="pl-4 border-l border-stone-200">
@@ -315,6 +332,12 @@
                         <li><strong>カタログ有＊</strong>：現物が確認できていないため、一部情報が未確定なもの。</li>                        
                     </ul>
                 </div>
+
+                <div>
+                    <h3 class="font-bold text-stone-700 border-l-4 border-stone-500 pl-3 mb-3">お願い</h3>
+                    <p>データの誤記等お気付きの点、ご意見ありましたらご連絡下さい。
+                    </p>
+                </div>    
             </div>
         </section>
     </main>
