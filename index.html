@@ -11,10 +11,10 @@
 </head>
 <body class="bg-stone-50 text-stone-800 font-sans">
 
-    <header class="bg-stone-800 text-stone-100 p-6 shadow-md">
+    <header class="bg-stone-600 text-stone-100 p-6 shadow-md">
         <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <h1 class="text-xl md:text-2xl font-serif tracking-wide">Alphonse Mucha Exhibition Database in Japan</h1>
-            <div id="total-count" class="text-sm bg-stone-700 px-4 py-1 rounded-full border border-stone-600">読み込み中...</div>
+            <div id="total-count" class="text-sm bg-stone-700 px-4 py-1 rounded-full border border-stone-700">読み込み中...</div>
         </div>
     </header>
 
@@ -67,24 +67,41 @@
                                 </div>
                         </div>
 
-                        <button id="btn-search" class="w-full bg-stone-700 text-white font-bold py-3 rounded hover:bg-stone-600 transition shadow-lg transform active:scale-95">
+                        <button id="btn-search" class="w-full bg-stone-600 text-white font-bold py-3 rounded hover:bg-stone-600 transition shadow-lg transform active:scale-95">
                             検索する
                         </button>
                     </div>
                 </div>
 
                 <div class="md:col-span-2 space-y-6">
-                    <div class="bg-white p-6 rounded-lg border border-stone-200 shadow-sm">
-                        <p class="text-xs font-bold text-stone-400 mb-2 text-center uppercase tracking-widest">Analytics</p>
-                        <div class="grid grid-cols-2 gap-4 h-48">
-                            <div class="bg-stone-50 flex items-center justify-center border-dashed border-2 border-stone-200 rounded text-stone-400 text-sm">
-                                [開催頻度グラフ]
+                    <div class="bg-white p-8 rounded-lg border border-stone-200 shadow-sm">
+                        <p class="text-sm font-bold text-stone-400 mb-8 text-center uppercase tracking-widest">Analytics</p>
+
+                        <div class="flex flex-col space-y-12">
+                            
+                            <div class="w-full">
+                                <h3 class="font-bold text-stone-700 border-l-4 border-stone-500 pl-3 mb-6">展覧会開催頻度の推移（1975年〜2025年）</h3>
+                                <div class="relative h-[250px] w-full">
+                                    <canvas id="muchaChart"></canvas>
+                                </div>
+                                <p class="mt-4 text-[13px] text-stone-500 leading-relaxed text-center">
+                                    ※棒グラフは5年間の合計開催数、折れ線グラフは1年あたりの平均開催数を示しています。
+                                </p>
                             </div>
-                            <div class="bg-stone-50 flex items-center justify-center border-dashed border-2 border-stone-200 rounded text-stone-400 text-sm">
-                                [地方別内訳]
+
+                            <hr class="border-stone-100">
+
+                            <div class="w-full">
+                                <h3 class="font-bold text-stone-700 border-l-4 border-stone-500 pl-3 mb-6">地方別開催内訳</h3>
+                                <div class="relative h-[300px] w-full">
+                                    <canvas id="regionChart"></canvas>
+                                </div>
+                                <p class="mt-4 text-[13px] text-stone-500 leading-relaxed text-center">
+                                    ※1975年以降、奈良県、徳島県、佐賀県を除く全国44都道府県でミュシャ展が開催されています。
+                                </p>
                             </div>
+
                         </div>
-                        <p class="text-xs text-center text-stone-400 mt-2">※ここにエクセルで作成したグラフ画像を配置予定</p>
                     </div>
                 </div>
             </div>
@@ -151,30 +168,162 @@
 
             <div class="bg-white p-8 rounded-lg shadow-sm border border-stone-200 space-y-6 leading-relaxed">
                 <div>
-                    <h3 class="font-bold text-stone-700 border-l-4 border-stone-500 pl-3 mb-3">プロジェクト概要</h3>
-                    <p>ここに研究の目的や背景を記載します。例：本プロジェクトは、1978年の日本初の回顧展から現在に至るまでの、アルフォンス・ミュシャに関連する展覧会の変遷を記録することを目的としています。</p>
+                    <h3 class="font-bold text-stone-700 border-l-4 border-stone-500 pl-3 mb-3">概要</h3>
+                    <p>ここに研究の目的や背景を記載します。例：本プロジェクトは、1978年の日本初の回顧展から現在に至るまでの、アルフォンス・ミュシャに関連する展覧会の変遷を記録することを目的としています。
+                        <br>
+                        このデータベースの特徴
+                    </p>
                 </div>
 
                 <div>
                     <h3 class="font-bold text-stone-700 border-l-4 border-stone-500 pl-3 mb-3">データの収集・分類について</h3>
-                    <p>各展覧会のカタログ、美術館のアーカイブ、国立新美術館のデータベース等を元に、独自に集計・作成したものです。</p>
+                    <p>各展覧会のカタログ、美術館のアーカイブ、国立新美術館のデータベース等を元に、個人が独自に集計・作成したものです。</p>
+                
+                    <div class="border border-stone-200 rounded-md overflow-hidden">
+                        <button id="btn-toggle-refs" class="w-full flex justify-between items-center px-4 py-3 bg-stone-50 hover:bg-stone-100 transition text-sm font-bold text-stone-600">
+                            <span>参照資料・出典一覧</span>
+                            <span id="ref-icon">＋</span>
+                        </button>
+        
+                        <div id="about-refs-content" class="hidden p-6 bg-white border-t border-stone-100 text-sm text-stone-600 leading-relaxed">
+    
+                            <div class="mb-5">
+                                <h4 class="font-bold text-stone-800 mb-3 flex items-center gap-2">
+                                    <span class="w-2 h-4 bg-stone-400 rounded-full"></span>
+                                    展覧会カタログ
+                                </h4>
+                                <ul class="space-y-3 ml-2">
+                                    <li class="pl-4 border-l border-stone-200">
+                                        日本海外美術株式会社編，1978，『ミュシャ展：アールヌーボーの花』日本海外美術株式会社．<br>
+                                        <span class="text-xs text-stone-500">※1978年松坂屋名古屋駅店のみ（全5か所）のカタログ</span>
+                                    </li>
+                                    <li class="pl-4 border-l border-stone-200">
+                                        ドイテク企画室編，1983，『アルフォンス・ミュシャ展：アール・ヌーヴォーの華』ドイテク企画室．<br>
+                                        <span class="text-xs text-stone-500">※1983年新宿伊勢丹美術館含む8か所（全21か所）のカタログ</span>
+                                    </li>
+                                    <li class="pl-4 border-l border-stone-200">
+                                        ブレーントラスト編，1991，『アルフォンス・ミュシャ展』アルフォンス・ミュシャ展実行委員会．<br>
+                                        <span class="text-xs text-stone-500">※1991年松坂屋銀座店含む3か所（全て）のカタログ</span>
+                                    </li>
+                                    <li class="pl-4 border-l border-stone-200">
+                                        千足伸行，河合晴生監修，2004，『ミュシャ展：プラハからパリへ／華麗なるアール・ヌーヴォーの誕生／ミュシャ財団秘蔵』日本テレビ放送網．<br>
+                                        <span class="text-xs text-stone-500">※2004年美術館「えき」KYOTO含む6か所（全て）のカタログ</span>
+                                    </li>
+                                    <li class="pl-4 border-l border-stone-200">
+                                        ドイ文化事業室編，2004，『アルフォンス・ミュシャ作品集（新装版）』ドイ文化事業室．<br>
+                                        <span class="text-xs text-stone-500">※1992年初版発行の『アルフォンス・ミュシャ作品集』の新装版</span>
+                                    </li>
+                                    <li class="pl-4 border-l border-stone-200">
+                                        産経新聞大阪本社編，2010，『アルフォンス・ミュシャ展：生誕150年記念』産経新聞大阪本社．<br>
+                                        <span class="text-xs text-stone-500">※2010年岩手県立美術館含む6か所（全て）のカタログ</span>
+                                    </li>
+                                    <li class="pl-4 border-l border-stone-200">
+                                        千足信行，佐藤智子監修，2013，『ミュシャ展：パリの夢モラヴィアの祈り／ミュシャ財団秘蔵』日本テレビ放送網．<br>
+                                        <span class="text-xs text-stone-500">※2013年森アーツセンターギャラリー含む5か所（全て）のカタログ</span>
+                                    </li>
+                                    <li class="pl-4 border-l border-stone-200">
+                                        国立新美術館ほか編，2017，『ミュシャ展：国立新美術館開館10周年／チェコ文化年事業』求龍堂．
+                                    </li>
+                                    <li class="pl-4 border-l border-stone-200">
+                                        古谷可由監修，2017，『ミュシャ展：運命の女たち』MBS．<br>
+                                        <span class="text-xs text-stone-500">※2017年美術館「えき」KYOTO含む6か所（全11か所）のカタログ</span>
+                                    </li>
+                                    <li class="pl-4 border-l border-stone-200">
+                                        日本テレビ放送網，Bunkamuraザ・ミュージアム編，2019，『みんなのミュシャ：ミュシャからマンガへ／線の魔術』日本テレビ放送網．<br>
+                                        <span class="text-xs text-stone-500">※2019年Bunkamuraザ・ミュージアム含む5か所（全6か所）のカタログ</span>
+                                    </li>
+                                    <li class="pl-4 border-l border-stone-200">
+                                        西山純子ほか編，2019，『ミュシャと日本、日本とオルリク』国書刊行会．<br>
+                                        <span class="text-xs text-stone-500">※2019年千葉市美術館含む4か所（全て）のカタログ</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="mt-8">
+                                <h4 class="font-bold text-stone-800 mb-3 flex items-center gap-2">
+                                    <span class="w-2 h-4 bg-stone-400 rounded-full"></span>
+                                    デジタルアーカイブ・参照サイト
+                                </h4>
+                                
+                                <ul class="space-y-3 ml-2">
+                                    <li class="pl-4 border-l border-stone-200 text-stone-600">
+                                        各美術館・展覧会の公式サイト
+                                    </li>
+                                    <li class="pl-4 border-l border-stone-200">
+                                        <a href="https://www.nact.jp/exhibitions1945-2005/" target="_blank" rel="noopener noreferrer" class="text-stone-600 no-underline hover:underline transition inline-flex items-center gap-1.5">
+                                            国立新美術館「日本の美術展記録1945-2005」
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-stone-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                        </a>
+                                    </li>
+                                    <li class="pl-4 border-l border-stone-200">
+                                        <a href="https://www.nact.jp/artcommons/user/index" target="_blank" rel="noopener noreferrer" class="text-stone-600 no-underline hover:underline transition inline-flex items-center gap-1.5">
+                                            国立新美術館アートコモンズ
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-stone-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                        </a>
+                                    </li>
+                                    <li class="pl-4 border-l border-stone-200">
+                                        <a href="https://www.muchafoundation.org/en/exhibitions/past-exhibitions/year/2025" target="_blank" rel="noopener noreferrer" class="text-stone-600 no-underline hover:underline transition inline-flex items-center gap-1.5">
+                                            Mucha Foundation 公式サイト「Past Exhibitions」
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-stone-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                        </a>
+                                    </li>
+                                    <li class="pl-4 border-l border-stone-200">
+                                        <a href="https://mucha.co.jp/past-exhibition/" target="_blank" rel="noopener noreferrer" class="text-stone-600 no-underline hover:underline transition inline-flex items-center gap-1.5">
+                                            株式会社尾形企画公式サイト「過去実績」
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-stone-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                        </a>
+                                    </li>
+                                    <li class="pl-4 border-l border-stone-200">
+                                        <a href="https://tokyo.czechcentres.cz/ja/" target="_blank" rel="noopener noreferrer" class="text-stone-600 no-underline hover:underline transition inline-flex items-center gap-1.5">
+                                            チェコセンター東京 公式サイト
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-stone-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                        </a>
+                                    </li>
+                                    <li class="pl-4 border-l border-stone-200 text-stone-600">
+                                        新聞各社（毎日・読売・朝日）の過去記事データベース
+                                    </li>
+                                    <li class="pl-4 border-l border-stone-200 text-stone-600">
+                                        複数の文化情報サイト
+                                        <span class="block text-xs text-stone-500 mt-1 leading-relaxed">
+                                            ※公式サイト等で詳細が確認できなかった項目について、情報が一致することを確認した上でデータに採用
+                                        </span>
+                                    </li>
+                                    <li class="pl-4 border-l border-stone-200">
+                                        <a href="http://ira.blog2.fc2.com/blog-entry-275.html" target="_blank" rel="noopener noreferrer" class="text-stone-600 no-underline hover:underline transition inline-flex items-center gap-1.5">
+                                            個人ブログ「Mucha-holic／ミュシャ中毒」
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-stone-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                        </a>
+                                        <span class="block text-xs text-stone-500 mt-1 leading-relaxed">
+                                            ※2016～2025年に開催予定のミュシャ展情報の各年版を補助的資料として参照し、公式情報との照合を行った。
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                             <p class="mt-4 text-sm text-stone-500">※各展覧会の詳細画面には、それぞれの個別参照資料を記載しています。</p>
+                        </div>
+                     </div>
                 </div>
 
-                <div>
+                <div class="mt-8">
                     <h3 class="font-bold text-stone-700 border-l-4 border-stone-500 pl-3 mb-3">凡例</h3>
-                    <ul class="list-disc list-inside space-y-1 text-sm text-stone-600">
+                    <ul class="list-disc list-inside space-y-2 text-[15px] text-stone-600 leading-relaxed">
+                        <li><strong>メインタイトル：サブタイトル／サブタイトル</strong>：展覧会名表記は国立新美術館のデータベースに従い、冠詞、記念表記等についてはサブタイトル扱いとした。</li>
+                        <li><strong>巡回情報</strong>：確認できた巡回展の合計とその内何番目かを記載した。</li>
+                        <li><strong>＊</strong>：情報が不明な部分。</li>                        
                         <li><strong>カタログ有</strong>：現物が確認できているもの、または所蔵が確認されているもの。</li>
-                        <li><strong>巡回情報</strong>：記録に残っている限りの主要な会場を記載。</li>
+                        <li><strong>カタログ有＊</strong>：現物が確認できていないため、一部情報が未確定なもの。</li>                        
                     </ul>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer class="bg-stone-800 text-stone-400 text-center py-6 text-xs mt-12">
+    <footer class="bg-stone-600 text-stone-400 text-center py-6 text-xs mt-12">
         <p>&copy; 2026 Alphonse Mucha Exhibition Database in Japan</p>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="main.js"></script>
 </body>
 </html>

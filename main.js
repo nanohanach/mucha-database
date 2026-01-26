@@ -18,6 +18,10 @@ window.addEventListener('DOMContentLoaded', () => {
             // フィルタ（都道府県・年）の選択肢を生成
             initPrefectureFilter(allExhibitions);
             initYearFilter(allExhibitions);
+
+            // 読み込んだ全データを使ってグラフを描く
+            renderChart(allExhibitions);
+            renderRegionChart(allExhibitions);
         },
         error: function(err) {
             // エラー時の処理
@@ -200,9 +204,21 @@ function renderResults() {
     // 1. ソート処理
     const sortVal = document.getElementById('sort-order').value;
     results.sort((a, b) => {
-        if (sortVal === 'date-asc') return a.start_date.localeCompare(b.start_date);
-        if (sortVal === 'date-desc') return b.start_date.localeCompare(a.start_date);
-        if (sortVal === 'title-asc') return a.title.localeCompare(b.title, 'ja');
+        // 日付が空の場合の予備（IDなどで比較）
+        const dateA = a.start_date || "9999-12-31";
+        const dateB = b.start_date || "9999-12-31";
+
+        if (sortVal === 'date-desc') {
+             // 新しい順（降順）
+            return dateB.localeCompare(dateA);
+        } else if (sortVal === 'title-asc') {
+            // タイトル順
+            return a.title.localeCompare(b.title, 'ja');
+        } else {
+            // デフォルト（古い順 / date-asc）
+            // これにより、年が同じでも月日で正しく比較されます
+            return dateA.localeCompare(dateB);
+        } 
     });
 
     // 2. ページネーションの計算（50件切り出し）
@@ -270,7 +286,7 @@ function renderResults() {
                         </div>
                         ${ex.reference ? `
                         <div class="pt-2 border-t border-stone-200 mt-4">
-                            <h4 class="font-bold text-stone-500 text-xs mb-1">参照・リンク</h4>
+                            <h4 class="font-bold text-stone-500 text-xs mb-1">参照</h4>
                             <p class="text-xs text-stone-500 break-all">${ex.reference}</p>
                         </div>` : ''}
                     </div>
@@ -329,3 +345,216 @@ document.getElementById('btn-next').addEventListener('click', () => {
 document.getElementById('btn-about').addEventListener('click', () => showView('about'));
 // 詳細ページから戻る
 document.getElementById('btn-about-back').addEventListener('click', () => showView('home'));
+
+// Aboutページの参照先アコーディオンの制御
+document.getElementById('btn-toggle-refs').addEventListener('click', () => {
+    const content = document.getElementById('about-refs-content');
+    const icon = document.getElementById('ref-icon');
+    
+    const isHidden = content.classList.contains('hidden');
+    
+    if (isHidden) {
+        content.classList.remove('hidden');
+        icon.textContent = '－';
+    } else {
+        content.classList.add('hidden');
+        icon.textContent = '＋';
+    }
+});
+
+//開催頻度のグラフ
+function renderChart(allData) {
+    const ctx = document.getElementById('muchaChart').getContext('2d');
+    
+    // 1. 集計ピリオドの設定（1975年〜2024年までは5年刻み、最後は2025年単独）
+    const periods = [
+        { label: '1975-79', start: 1975, end: 1979, divisor: 5 },
+        { label: '1980-84', start: 1980, end: 1984, divisor: 5 },
+        { label: '1985-89', start: 1985, end: 1989, divisor: 5 },
+        { label: '1990-94', start: 1990, end: 1994, divisor: 5 },
+        { label: '1995-99', start: 1995, end: 1999, divisor: 5 },
+        { label: '2000-04', start: 2000, end: 2004, divisor: 5 },
+        { label: '2005-09', start: 2005, end: 2009, divisor: 5 },
+        { label: '2010-14', start: 2010, end: 2014, divisor: 5 },
+        { label: '2015-19', start: 2015, end: 2019, divisor: 5 },
+        { label: '2020-24', start: 2020, end: 2024, divisor: 5 },
+        { label: '2025-',   start: 2025, end: 2025, divisor: 1 } // 2025年以降は1で割る（＝そのままの数）
+    ];
+
+    const counts = periods.map(p => {
+        return allData.filter(d => {
+            const year = new Date(d.start_date).getFullYear();
+            return year >= p.start && year <= p.end;
+        }).length;
+    });
+
+    // 各期間の「年平均」を計算
+    const averages = counts.map((count, index) => {
+        const divisor = periods[index].divisor;
+        return (count / divisor).toFixed(1);
+    });
+
+    // 2. グラフの描画
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: periods.map(p => p.label),
+            datasets: [
+                {
+                    label: '年平均開催数',
+                    data: averages,
+                    type: 'line',
+                    borderColor: '#78716c', // stone-500
+                    backgroundColor: 'rgba(227, 150, 198, 0.1)',
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    tension: 0.3, // 少し曲線を滑らかに
+                    order: 1 // 折れ線を前に
+                },
+                {
+                    label: '5年間の合計開催数',
+                    data: counts,
+                    backgroundColor: '#F7E1E1', 
+                    hoverBackgroundColor: '#D18E8E',
+                    borderRadius: 4,
+                    order: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { // 目盛りを左側に一本化
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: '展覧会数（回）',
+                        font: { size: 12, weight: 'bold' }
+                    },
+                    ticks: { stepSize: 5 } // 5刻みで見やすく
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: { boxWidth: 15, font: { size: 12 } }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    titleColor: '#444',
+                    bodyColor: '#444',
+                    borderColor: '#ddd',
+                    borderWidth: 1
+                }
+            }
+        }
+    });
+}
+
+/**
+ * 地域別ドーナツグラフを描画する
+ */
+function renderRegionChart(allData) {
+    const canvas = document.getElementById('regionChart');
+    if (!canvas) return;
+
+    // 以前のグラフが残っていたら破棄（再描画エラー防止）
+    const existingChart = Chart.getChart("regionChart");
+    if (existingChart) { existingChart.destroy(); }
+
+    const ctx = canvas.getContext('2d');
+
+    // 1. 都道府県 -> 地方のマッピング
+    const regionMapping = {
+        '北海道': ['北海道'],
+        '東北': ['青森県', '岩手県', '宮城県', '秋田県', '山形県', '福島県'],
+        '関東': ['茨城県', '栃木県', '群馬県', '埼玉県', '千葉県', '東京都', '神奈川県'],
+        '中部': ['新潟県', '富山県', '石川県', '福井県', '山梨県', '長野県', '岐阜県', '静岡県', '愛知県'],
+        '近畿': ['三重県', '滋賀県', '京都府', '大阪府', '兵庫県', '奈良県', '和歌山県'],
+        '中国': ['鳥取県', '島根県', '岡山県', '広島県', '山口県'],
+        '四国': ['徳島県', '香川県', '愛媛県', '高知県'],
+        '九州': ['福岡県', '佐賀県', '長崎県', '熊本県', '大分県', '宮崎県', '鹿児島県', '沖縄県']
+    };
+
+    // 2. 集計
+    const regionCounts = { '北海道': 0, '東北': 0, '関東': 0, '中部': 0, '近畿': 0, '中国': 0, '四国': 0, '九州': 0 };
+
+    allData.forEach(d => {
+        // ※CSVの列名が「prefecture」であることを想定しています。違う場合はここを書き換えてください。
+        const pref = d.prefecture; 
+        for (const [region, prefs] of Object.entries(regionMapping)) {
+            if (prefs.includes(pref)) {
+                regionCounts[region]++;
+                break;
+            }
+        }
+    });
+
+    // 3. グラフ描画
+    const salmonPalette = [
+                '#D9A6A6', //
+                '#D18E8E', // 
+                '#DB968F', // 
+                '#F2AE99', // 
+                '#EBB4A2', // 
+                '#F5CBA7', // 
+                '#F5C6B4', // 
+                '#F4C1C1'  // 
+            ];
+            
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(regionCounts),
+
+            // datasets の設定
+            datasets: [{
+                data: Object.values(regionCounts),
+                backgroundColor: salmonPalette,
+                hoverBackgroundColor: salmonPalette, // 色は変えず、動きだけ出す
+                hoverOffset: 15,
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '75%', // 真ん中の穴の大きさ
+            // 【ここを追加】グラフの周囲に余白を作る
+            layout: {
+                padding: 20 // 20px分の「飛び出し用スペース」を確保
+            },
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: { boxWidth: 12, padding: 15, font: { size: 12 } }
+                }
+                
+            }
+        },
+        // 真ん中に「44都道府県で開催」と表示するプラグイン
+        plugins: [{
+            id: 'centerText',
+            afterDraw(chart) {
+                const { width, height, ctx } = chart;
+                ctx.save();
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const centerX = chart.getDatasetMeta(0).data[0]?.x || width / 2;
+                const centerY = chart.getDatasetMeta(0).data[0]?.y || height / 2;
+
+                // 1行目
+                ctx.font = "bold 28px sans-serif";
+                ctx.fillStyle = "#615c57";
+                ctx.fillText("44都道府県", centerX, centerY - 10);
+                // 2行目
+                ctx.font = "bold 18px sans-serif";
+                ctx.fillStyle = "#a8a29e";
+                ctx.fillText("で開催", centerX, centerY + 24);
+                ctx.restore();
+            }
+        }]
+    });
+}
