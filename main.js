@@ -114,6 +114,14 @@ function showView(viewName) {
         resultView.classList.remove('hidden');
     } else if (viewName === 'about') {
         aboutView.classList.remove('hidden');
+        // データの読み込みが終わっている（allExhibitionsがある）か確認
+        if (typeof allExhibitions !== 'undefined' && allExhibitions.length > 0) {
+            // 画面の切り替え（hidden解除）が完了してから描画するために少しだけ待つ
+            setTimeout(() => {
+                renderChart(allExhibitions);
+                renderRegionChart(allExhibitions);
+            }, 100); 
+        }
     } else {
         // それ以外（home）はホームを表示
         homeView.classList.remove('hidden');
@@ -557,4 +565,20 @@ function renderRegionChart(allData) {
             }
         }]
     });
+}
+
+/**
+ * 参照資料アコーディオンの開閉
+ */
+function toggleAccordion(id) {
+    const content = document.getElementById(id);
+    const icon = document.getElementById('ref-icon');
+    
+    if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        if (icon) icon.textContent = '－';
+    } else {
+        content.classList.add('hidden');
+        if (icon) icon.textContent = '＋';
+    }
 }
