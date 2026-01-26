@@ -532,7 +532,10 @@ function renderRegionChart(allData) {
             cutout: '75%', // 真ん中の穴の大きさ
             // 【ここを追加】グラフの周囲に余白を作る
             layout: {
-                padding: 20 // 20px分の「飛び出し用スペース」を確保
+                top: 10,
+                bottom: 30, // 下に余白を作ってぶつかりを防止
+                left: 10,
+                right: 10
             },
             plugins: {
                 legend: {
@@ -554,7 +557,7 @@ function renderRegionChart(allData) {
                 const centerY = chart.getDatasetMeta(0).data[0]?.y || height / 2;
 
                 // 1行目
-                ctx.font = "bold 28px sans-serif";
+                ctx.font = "bold 25px sans-serif";
                 ctx.fillStyle = "#615c57";
                 ctx.fillText("44都道府県", centerX, centerY - 10);
                 // 2行目
