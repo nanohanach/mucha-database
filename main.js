@@ -372,7 +372,14 @@ document.getElementById('btn-toggle-refs').addEventListener('click', () => {
 
 //開催頻度のグラフ
 function renderChart(allData) {
-    const ctx = document.getElementById('muchaChart').getContext('2d');
+    const canvas = document.getElementById('muchaChart');
+    if (!canvas) return;
+
+    // 以前のグラフが残っていたら破棄（再描画エラー防止）
+    const existingChart = Chart.getChart("muchaChart");
+    if (existingChart) { existingChart.destroy(); }
+
+    const ctx = canvas.getContext('2d');
     
     // 1. 集計ピリオドの設定（1975年〜2024年までは5年刻み、最後は2025年単独）
     const periods = [
@@ -576,7 +583,7 @@ function renderRegionChart(allData) {
 function toggleAccordion(id) {
     const content = document.getElementById(id);
     const icon = document.getElementById('ref-icon');
-    
+
     if (content.classList.contains('hidden')) {
         content.classList.remove('hidden');
         if (icon) icon.textContent = '－';
@@ -585,3 +592,43 @@ function toggleAccordion(id) {
         if (icon) icon.textContent = '＋';
     }
 }
+
+// 画面回転・リサイズ時にグラフを再描画
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    console.log('📐 resize イベント発火:', window.innerWidth, 'x', window.innerHeight);
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        console.log('⏱️ 再描画チェック開始');
+        if (allExhibitions.length > 0) {
+            const homeView = document.getElementById('home-view');
+            // ホーム画面が表示されている場合のみ再描画
+            if (!homeView.classList.contains('hidden')) {
+                // canvasのサイズ属性をリセット
+                const muchaCanvas = document.getElementById('muchaChart');
+                const regionCanvas = document.getElementById('regionChart');
+                if (muchaCanvas) {
+                    muchaCanvas.style.width = '';
+                    muchaCanvas.style.height = '';
+                    muchaCanvas.removeAttribute('width');
+                    muchaCanvas.removeAttribute('height');
+                }
+                if (regionCanvas) {
+                    regionCanvas.style.width = '';
+                    regionCanvas.style.height = '';
+                    regionCanvas.removeAttribute('width');
+                    regionCanvas.removeAttribute('height');
+                }
+
+                console.log('✅ canvasリセット後、グラフ再描画実行');
+                console.log('親div幅:', muchaCanvas?.parentElement?.offsetWidth);
+                renderChart(allExhibitions);
+                renderRegionChart(allExhibitions);
+            } else {
+                console.log('⏭️ ホーム画面非表示 → スキップ');
+            }
+        } else {
+            console.log('⚠️ データ未読み込み → スキップ');
+        }
+    }, 300);
+});
