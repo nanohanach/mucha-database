@@ -536,13 +536,15 @@ function renderRegionChart(allData) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            cutout: '75%', // 真ん中の穴の大きさ
+            cutout: '70%', // 真ん中の穴の大きさ
             // 【ここを追加】グラフの周囲に余白を作る
             layout: {
-                top: 10,
-                bottom: 30, // 下に余白を作ってぶつかりを防止
-                left: 10,
-                right: 10
+                padding: {
+                    top: 10,
+                    bottom: 20, // 下に余白を作ってぶつかりを防止
+                    left: 10,
+                    right: 10
+                }
             },
             plugins: {
                 legend: {
