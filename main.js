@@ -282,7 +282,7 @@ function renderResults() {
                     </div>
                     <div class="space-y-4">
                         <div>
-                            <h4 class="font-bold text-stone-500 text-xs mb-1">カタログ情報</h4>
+                            <h4 class="font-bold text-stone-500 text-xs mb-1">展覧会カタログの有無・注記</h4>
                             <div class="flex items-center gap-2 mb-1">
                                 <span class="text-xs font-bold px-2 py-0.5 bg-stone-200 rounded text-stone-700">有無: ${ex.catalog_status}</span>
                             </div>
@@ -372,7 +372,7 @@ document.getElementById('btn-toggle-refs').addEventListener('click', () => {
 
 //開催頻度のグラフ
 function renderChart(allData) {
-    const canvas = document.getElementById('muchaChart');
+     const canvas = document.getElementById('muchaChart');
     if (!canvas) return;
 
     // 以前のグラフが残っていたら破棄（再描画エラー防止）
@@ -380,7 +380,7 @@ function renderChart(allData) {
     if (existingChart) { existingChart.destroy(); }
 
     const ctx = canvas.getContext('2d');
-    
+
     // 1. 集計ピリオドの設定（1975年〜2024年までは5年刻み、最後は2025年単独）
     const periods = [
         { label: '1975-79', start: 1975, end: 1979, divisor: 5 },
@@ -583,7 +583,7 @@ function renderRegionChart(allData) {
 function toggleAccordion(id) {
     const content = document.getElementById(id);
     const icon = document.getElementById('ref-icon');
-
+    
     if (content.classList.contains('hidden')) {
         content.classList.remove('hidden');
         if (icon) icon.textContent = '－';
