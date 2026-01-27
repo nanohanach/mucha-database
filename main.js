@@ -541,7 +541,7 @@ function renderRegionChart(allData) {
             layout: {
                 padding: {
                     top: 10,
-                    bottom: 20, // 下に余白を作ってぶつかりを防止
+                    bottom: 10, // 下に余白を作ってぶつかりを防止
                     left: 10,
                     right: 10
                 }
